@@ -12,7 +12,7 @@ public class CommandMoveSystem : ReactiveSystem<InputEntity>
         _movers = contexts.game.GetGroup(GameMatcher.AllOf(GameMatcher.Mover).NoneOf(GameMatcher.Move));
     }
 
-    protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context)
+    protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context)
     {
         return context.CreateCollector(InputMatcher.AllOf(InputMatcher.LeftMouse, InputMatcher.MouseDown));
     }

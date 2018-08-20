@@ -8,7 +8,7 @@ If you are brand new to Entitas, you should make sure to go over the [Hello Worl
 
 ## Step 1 - Installation
 
-Start with an empty Unity project (set up for 2D), and add the Entitas library to your assets folder (for organisation, place this in a sub-folder called "Libraries"). Now create a folder called "Generated" for the code Entitas will generate for you and a folder called "Game Code" where you will keep your components and systems. In your Game Code folder, create a folder called "Components" and one called "Systems". 
+Start with an empty Unity project (set up for 2D), and add the Entitas library to your assets folder (for organisation, place this in a sub-folder called "Libraries"). Now create a folder called "Generated" for the code Entitas will generate for you and a folder called "Game Code" where you will keep your components and systems. In your Game Code folder, create a folder called "Components" and one called "Systems".
 
 ## Step 2 - Entitas preferences and core file generation
 
@@ -18,7 +18,7 @@ Entitas will now generate the core files needed for your project, these include 
 
 ## Step 3 - Components
 
-To represent entity position in space we'll need a `PositionComponent` (we're in 2D so we'll use a Vector2 to store the position). We're also going to represent the entity's direction as a degree value, so we'll need a float `DirectionComponent`. 
+To represent entity position in space we'll need a `PositionComponent` (we're in 2D so we'll use a Vector2 to store the position). We're also going to represent the entity's direction as a degree value, so we'll need a float `DirectionComponent`.
 
 *Components.cs*
 ```csharp
@@ -52,7 +52,7 @@ public class SpriteComponent : IComponent
 }
 ```
 
-We're going to move some of our entities, so we'll create a flag component to indicate entities that can move ("movers"). We'll also need a component to hold the movement target location and another flag to indicate that the movement has completed successfully. 
+We're going to move some of our entities, so we'll create a flag component to indicate entities that can move ("movers"). We'll also need a component to hold the movement target location and another flag to indicate that the movement has completed successfully.
 
 *Components.cs (contd)*
 ```csharp
@@ -73,7 +73,7 @@ public class MoveCompleteComponent : IComponent
 }
 ```
 
-Finally we have the components from the Input context. We are expecting user input from the mouse, so we'll create components to store the mouse position that we will read from Unity's `Input`class. We want to distinguish between mouse down, mouse up, and mouse pressed (i.e. neither up nor down). We'll also want to distinguish the left from the right mouse buttons. There is only one left mouse button, so we can make use of the `Unique` attribute. 
+Finally we have the components from the Input context. We are expecting user input from the mouse, so we'll create components to store the mouse position that we will read from Unity's `Input`class. We want to distinguish between mouse down, mouse up, and mouse pressed (i.e. neither up nor down). We'll also want to distinguish the left from the right mouse buttons. There is only one left mouse button, so we can make use of the `Unique` attribute.
 
 *Components.cs (contd)*
 ```csharp
@@ -133,7 +133,7 @@ public class AddViewSystem : ReactiveSystem<GameEntity>
         _context = contexts.game;
     }
 
-    protected override Collector<GameEntity> GetTrigger(IContext<GameEntity> context)
+    protected override ICollector<GameEntity> GetTrigger(IContext<GameEntity> context)
     {
         return context.CreateCollector(GameMatcher.Sprite);
     }
@@ -173,7 +173,7 @@ public class RenderSpriteSystem : ReactiveSystem<GameEntity>
     {
     }
 
-    protected override Collector<GameEntity> GetTrigger(IContext<GameEntity> context)
+    protected override ICollector<GameEntity> GetTrigger(IContext<GameEntity> context)
     {
         return context.CreateCollector(GameMatcher.Sprite);
     }
@@ -211,7 +211,7 @@ public class RenderPositionSystem : ReactiveSystem<GameEntity>
     {
     }
 
-    protected override Collector<GameEntity> GetTrigger(IContext<GameEntity> context)
+    protected override ICollector<GameEntity> GetTrigger(IContext<GameEntity> context)
     {
         return context.CreateCollector(GameMatcher.Position);
     }
@@ -250,7 +250,7 @@ public class RenderDirectionSystem : ReactiveSystem<GameEntity>
         _context = contexts.game;
     }
 
-    protected override Collector<GameEntity> GetTrigger(IContext<GameEntity> context)
+    protected override ICollector<GameEntity> GetTrigger(IContext<GameEntity> context)
     {
         return context.CreateCollector(GameMatcher.Direction);
     }
@@ -413,24 +413,24 @@ public class EmitInputSystem : IInitializeSystem, IExecuteSystem
         // left mouse button
         if (Input.GetMouseButtonDown(0))
             _leftMouseEntity.ReplaceMouseDown(mousePosition);
-        
+
         if (Input.GetMouseButton(0))
             _leftMouseEntity.ReplaceMousePosition(mousePosition);
-        
+
         if (Input.GetMouseButtonUp(0))
             _leftMouseEntity.ReplaceMouseUp(mousePosition);
-        
+
 
         // left mouse button
         if (Input.GetMouseButtonDown(1))
             _rightMouseEntity.ReplaceMouseDown(mousePosition);
-        
+
         if (Input.GetMouseButton(1))
             _rightMouseEntity.ReplaceMousePosition(mousePosition);
-        
+
         if (Input.GetMouseButtonUp(1))
             _rightMouseEntity.ReplaceMouseUp(mousePosition);
-        
+
     }
 }
 ```
@@ -535,13 +535,13 @@ public class InputSystems : Feature
         Add(new EmitInputSystem(contexts));
         Add(new CreateMoverSystem(contexts));
         Add(new CommandMoveSystem(contexts));
-    }         
+    }
 }
 ```
 
 ## Step 7 - Game Controller
 
-Now we need to create thee game controller to initialise and activate the game. The concept of the GameController should be familiar to you by now, but if not please re-visit [Hello World]9https://github.com/sschmid/Entitas-CSharp/wiki/Unity-Tutorial-Hello-World) to get a description. Once this script has been saved, create an empty game object in your unity heirarchy and attach this script to it. 
+Now we need to create thee game controller to initialise and activate the game. The concept of the GameController should be familiar to you by now, but if not please re-visit [Hello World]9https://github.com/sschmid/Entitas-CSharp/wiki/Unity-Tutorial-Hello-World) to get a description. Once this script has been saved, create an empty game object in your unity heirarchy and attach this script to it.
 
 You may need to adjust your sprite import settings, and camera settings to get the sprites to look the way you want them to look on screen. The finished example project sets the camera's orthographic size to 10 and the background to solid grey. Your sprite should also face vertically up so as to make sure the direction is properly rendered.
 
@@ -581,6 +581,3 @@ public class GameController : MonoBehaviour
 ## Step 8 - Run the game
 
 Save, compile and run your game from the Unity editor. Right-clicking on the screen should create objects displaying your sprite at the position on the screen which you clicked. Left clicking should send them moving towards the psotiion on the screen which you clicked. Notice their direction updating to aim them towards their target point. When they reach the target position they will stop moving and again become available for movement assignments.
-
-
-

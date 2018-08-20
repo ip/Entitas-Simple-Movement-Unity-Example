@@ -11,7 +11,7 @@ public class CreateMoverSystem : ReactiveSystem<InputEntity>
         _gameContext = contexts.game;
     }
 
-    protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context)
+    protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context)
     {
         return context.CreateCollector(InputMatcher.AllOf(InputMatcher.RightMouse, InputMatcher.MouseDown));
     }
